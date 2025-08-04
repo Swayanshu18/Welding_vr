@@ -11,11 +11,11 @@ public class GazeDetector : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        Debug.DrawRay(ray.origin, ray.direction * gazeDistance, Color.red);  // 👈 Show ray in Scene view
+        Debug.DrawRay(ray.origin, ray.direction * gazeDistance, Color.red);  
 
         if (Physics.Raycast(ray, out hit, gazeDistance))
         {
-            Debug.Log("Gazing at: " + hit.collider.name);  // 👈 Log what object you are hitting
+            Debug.Log("Gazing at: " + hit.collider.name);  
             GameObject hitObject = hit.collider.gameObject;
 
             if (hitObject != currentGazedObject)

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GazeGlowObject : MonoBehaviour
 {
-    public Color glowColor = Color.cyan;  // Glow color
+    public Color glowColor = Color.cyan;  
     public float emissionIntensity = 1.5f;
 
     private Material originalMaterial;
@@ -19,7 +19,7 @@ public class GazeGlowObject : MonoBehaviour
             originalEmissionColor = originalMaterial.GetColor("_EmissionColor");
         }
 
-        // Ensure emission is active
+       
         originalMaterial.EnableKeyword("_EMISSION");
     }
 

@@ -12,7 +12,7 @@ public class WeldingTorch : MonoBehaviour
     public float delayBetweenObjects = 0.5f;
 
     [Header("Object Reveal Mapping")]
-    public List<CollisionRevealMapping> collisionReveals;  // define mapping in inspector
+    public List<CollisionRevealMapping> collisionReveals;
 
     private bool isColliding = false;
     private bool coroutineStarted = false;
@@ -39,6 +39,13 @@ public class WeldingTorch : MonoBehaviour
 
     void Update()
     {
+       
+        if (leftTriggerAction != null)
+        {
+            float triggerValue = leftTriggerAction.action.ReadValue<float>();
+            Debug.Log("Trigger value: " + triggerValue);
+        }
+
         if (!hasAlreadyShown && isColliding && !coroutineStarted && leftTriggerAction != null)
         {
             float triggerValue = leftTriggerAction.action.ReadValue<float>();
@@ -48,7 +55,21 @@ public class WeldingTorch : MonoBehaviour
                 coroutineStarted = true;
                 hasAlreadyShown = true;
                 StartCoroutine(ShowObjectsOneByOne(revealMap[currentCollidedObjectName]));
-                Debug.Log($"Trigger pressed while colliding with: {currentCollidedObjectName}");
+                Debug.Log("Trigger pressed while colliding with: " + currentCollidedObjectName);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Debug.Log("Testing Object1 reveal via key press");
+
+            if (revealMap.ContainsKey("Object1"))
+            {
+                StartCoroutine(ShowObjectsOneByOne(revealMap["Object1"]));
+            }
+            else
+            {
+                Debug.LogWarning("Object1 not found in revealMap");
             }
         }
     }
@@ -60,7 +81,7 @@ public class WeldingTorch : MonoBehaviour
             if (obj != null)
             {
                 obj.SetActive(true);
-                Debug.Log($"Object made visible: {obj.name}");
+                Debug.Log("Object made visible: " + obj.name);
                 yield return new WaitForSeconds(delayBetweenObjects);
             }
         }
@@ -70,8 +91,17 @@ public class WeldingTorch : MonoBehaviour
     {
         isColliding = true;
         currentCollidedObjectName = collision.gameObject.name;
-
         Debug.Log("Collided with: " + currentCollidedObjectName);
+
+        if (!revealMap.ContainsKey(currentCollidedObjectName))
+        {
+            Debug.LogWarning("No reveal mapping found for: " + currentCollidedObjectName);
+            Debug.Log("Available keys in revealMap:");
+            foreach (var key in revealMap.Keys)
+            {
+                Debug.Log("Key: [" + key + "]");
+            }
+        }
     }
 
     void OnCollisionExit(Collision collision)
@@ -97,6 +127,8 @@ public class WeldingTorch : MonoBehaviour
 
         foreach (var mapping in collisionReveals)
         {
+            Debug.Log("Adding mapping for: " + mapping.collidedObjectName + ", Objects: " + mapping.objectsToShow.Count);
+
             if (!revealMap.ContainsKey(mapping.collidedObjectName))
             {
                 revealMap[mapping.collidedObjectName] = new List<GameObject>();
@@ -109,7 +141,7 @@ public class WeldingTorch : MonoBehaviour
     [System.Serializable]
     public class CollisionRevealMapping
     {
-        public string collidedObjectName;           // e.g., "Object1", "Object2"
-        public List<GameObject> objectsToShow;      // which objects to show when collided with this
+        public string collidedObjectName;
+        public List<GameObject> objectsToShow;
     }
 }
